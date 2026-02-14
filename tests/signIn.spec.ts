@@ -1,10 +1,11 @@
 import test, { expect } from "@playwright/test";
 import SignInPage from "../pom/pages/SignInPage";
-import OpenIdLogin from "../pom/pages/OpenIdLogin";
+import OpenIdLogin from "../pom/pages/OpenIdLoginPage";
 import DashboardPage from "../pom/pages/DashboardPage";
-import { validUser } from "../test-data/users-data/users";
 import { ErrorMessages } from "../test-data/messages/error-messages";
-import ForgotPasswordPage from "../pom/pages/ForgotPassword";
+import ForgotPasswordPage from "../pom/pages/ForgotPasswordPage";
+import { validUser } from "../test-data/users-data/users";
+
 
 
 test.describe('Sign In Tests', () => {
@@ -79,7 +80,3 @@ test.describe('Sign In Tests', () => {
     })
 
 })
-
-
-
-
