@@ -49,11 +49,12 @@ test.describe('Registration Page tests', () => {
 
     test('Registration with invalid email', async () => {
         const randomPassword = faker.internet.password({ length: 10 });
+            await registerPage.register(faker.internet.username(), 'invalid-email', randomPassword, randomPassword);
+            await expect(registerPage.emailField).toHaveJSProperty('validity.typeMismatch', true);
+            await expect(registerPage.emailField).toHaveJSProperty('validationMessage', ErrorMessages.EMAIL_INVALID_MESSAGE)
+            await expect(registerPage.page).toHaveURL(registerPage.url);
 
-        await registerPage.register(faker.internet.username(), 'invalid-email', randomPassword, randomPassword);
-        await expect(registerPage.emailField).toHaveJSProperty('validity.typeMismatch', true);
-        await expect(registerPage.emailField).toHaveJSProperty('validationMessage', ErrorMessages.EMAIL_INVALID_MESSAGE);
-        await expect(registerPage.page).toHaveURL(registerPage.url);
+        
     });
 
     test('Registration with empty password', async () => {

@@ -1,6 +1,7 @@
 import { expect, Locator } from "@playwright/test";
 import BasePage from "./BasePage";
 import { RepoData } from '../../models/repo.model';
+import { step } from "../../utils/data-generation/decorators/step";
 
 
 export default class NewRepoPage extends BasePage {
@@ -22,23 +23,28 @@ export default class NewRepoPage extends BasePage {
     private createRepoButton: Locator = this.page.locator('.ui.primary.button', { hasText: 'Create Repository' });
 
 
+    @step('Assure owner is preselected: {username}')
     async assureCorrectOwnerPreselected(username: string) {
         await expect(this.ownerDropdown).toHaveText(username);
     }
 
+    @step('Enter repository name: {repoName}')
     async enterRepoName(repoName: string) {
         await this.repoNameField.fill(repoName);
     }
 
+    @step('Set repository private')
     async setRepoPrivate() {
         await this.visibilityCheckbox.check();
         await expect(this.visibilityCheckbox).toBeChecked();
     }
 
+    @step('Enter repository description: {description}')
     async enterDescription(description: string) {
         await this.descriptionField.fill(description);
     }
 
+    @step('Select repository template: {templateName}')
     async selectRepoTemplate(templateName: string) {
         await this.repoTemplateDropdown.click();
 
@@ -49,6 +55,7 @@ export default class NewRepoPage extends BasePage {
         await expect(this.templateItemsSection).toBeVisible();
     }
 
+    @step('Select template items: {items}')
     async selectTemplateItems(items: string[]) {
         if (!items.length) throw new Error('At least one template item must be selected');
         for (const item of items) {
@@ -61,12 +68,14 @@ export default class NewRepoPage extends BasePage {
         }
     }
 
+    @step('Select issue labels: {issueLabelValue}')
     async selectIssueLabels(issueLabelValue: string) {
         await this.issueLabelDropdown.click();
         const labelOption = this.issueLabelDropdown.locator(`.item[data-value="${issueLabelValue}"]`)
         await labelOption.click();
     }
 
+    @step('Select gitignore templates: {gitignoreTemplateNames}')
     async selectGitignoreTemplates(gitignoreTemplateNames: string[]) {
         await this.gitignoreDropdown.click();
         for (const gitignoreTemplateName of gitignoreTemplateNames) {
@@ -77,6 +86,7 @@ export default class NewRepoPage extends BasePage {
 
     }
 
+    @step('Select license template: {licenseTemplateName}')
     async selectLicenseTemplate(licenseTemplateName: string) {
         await this.licenseTemplateDropdown.click();
         await this.licenseTemplateDropdown.getByRole('option', { name: licenseTemplateName, exact: true }).click();
@@ -84,25 +94,30 @@ export default class NewRepoPage extends BasePage {
 
     }
 
+    @step('Initialize repository with README')
     async initializeWithReadme() {
         await this.initializeWithReadmeCheckbox.check();
         await expect(this.initializeWithReadmeCheckbox).toBeChecked();
     }
 
+    @step('Enter default branch name: {defaultBranchName}')
     async enterDefaultBranchName(defaultBranchName: string) {
         await this.defaultBranchNameField.fill(defaultBranchName);
     }
 
+    @step('Set repository as template')
     async setTemplate() {
         await this.templateCheckbox.check();
         await expect(this.templateCheckbox).toBeChecked();
     }
 
+    @step('Click Create Repository button')
     async clickCreateRepoButton() {
         await this.createRepoButton.click();
 
     }
 
+    @step('Create repository with data: {data}')
     async createRepository(data: RepoData) {
         await this.enterRepoName(data.repoName);
         if (data.isPrivate) {

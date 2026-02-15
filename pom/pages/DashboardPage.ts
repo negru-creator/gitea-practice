@@ -1,5 +1,6 @@
 import BasePage from "./BasePage";
 import { Locator } from "@playwright/test";
+import { step } from "../../utils/data-generation/decorators/step";
 
 export default class DashboardPage extends BasePage {
     public url: string = '/';
@@ -7,6 +8,7 @@ export default class DashboardPage extends BasePage {
     public navBarUserName: Locator = this.page.locator('.gt-ellipsis').first();
     private createNewRepoButton: Locator = this.page.locator('[aria-label="New Repository"]');
 
+    @step('Click Create New Repository button')
     public async clickCreateNewRepoButton() {
         await this.createNewRepoButton.click();
     }

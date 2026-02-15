@@ -1,4 +1,5 @@
 import { Page } from "@playwright/test";
+import { step } from "../../utils/data-generation/decorators/step";
 
 export default class BasePage {
     page: Page;
@@ -9,6 +10,7 @@ export default class BasePage {
         this.url = '';
     }
 
+    @step('Navigate to page: {url}')
     async navigateTo() {
         await this.page.goto(this.url);
     }
