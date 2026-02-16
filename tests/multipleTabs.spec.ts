@@ -5,6 +5,5 @@ test('multiple tabs test', async ({ page, context }) => {
     await page.goto('/');
     await page.getByText('Help').click();
     const helpPage = await helpPagePromise;
-    await expect(helpPage.locator('h1', {hasText: 'What is Gitea?'})).toBeVisible();
+    await expect(helpPage.locator('h1', { hasText: 'What is Gitea?' })).toBeVisible();
 });
-    

@@ -1,14 +1,14 @@
 import { expect, Locator } from "@playwright/test";
 import BasePage from "./BasePage";
-import { step } from "../../utils/data-generation/decorators/step";
+import { step } from "../../utils/decorators/step";
 
 export default class RepoDetailsPage extends BasePage {
 
   private settingsButton: Locator = this.page.getByRole('link', { name: 'Settings' });
   private repoMainDescription: Locator = this.page.locator('.repo-description');
   private repoDescriptionInSettings: Locator = this.page.locator('#description');
-  private privateLabel: Locator = this.page.locator('span.ui.basic.label.not-mobile',{ hasText: 'Private' });
-  private templateLabel: Locator = this.page.locator('span.ui.basic.label.not-mobile',{ hasText: 'Template' });
+  private privateLabel: Locator = this.page.locator('span.ui.basic.label.not-mobile', { hasText: 'Private' });
+  private templateLabel: Locator = this.page.locator('span.ui.basic.label.not-mobile', { hasText: 'Template' });
 
   @step('Wait for repository page for user: {username}, repo: {repoName}')
   async waitForRepoPage(username: string, repoName: string) {

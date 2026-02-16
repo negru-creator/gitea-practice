@@ -1,24 +1,11 @@
-import { test, expect } from '@playwright/test';
-import RegisterPage from '../pom/pages/RegisterPage';
 import { faker } from '@faker-js/faker/locale/en';
-import DashboardPage from '../pom/pages/DashboardPage';
 import { ErrorMessages } from '../test-data/messages/error-messages';
 import { generateUniqueEmail } from '../utils/data-generation/emails';
-
-
-
+import { expect, test } from '../utils/fixtures/pages';
 
 test.describe('Registration Page tests', () => {
-    let registerPage: RegisterPage;
-    let dashboardPage: DashboardPage;
 
-    test.beforeEach(async ({ page }) => {
-        registerPage = new RegisterPage(page);
-        dashboardPage = new DashboardPage(page);
-        await registerPage.navigateTo();
-    });
-
-    test('Successful registration', async () => {
+    test('Successful registration', async ({ registerPage, dashboardPage }) => {
         const randomUserName = faker.internet.username();
         const randomPassword = faker.internet.password({ length: 10 });
 
@@ -28,7 +15,7 @@ test.describe('Registration Page tests', () => {
 
     });
 
-    test('Registration with empty username', async ({ page }) => {
+    test('Registration with empty username', async ({ registerPage }) => {
         const randomPassword = faker.internet.password({ length: 10 });
 
         await registerPage.register('', generateUniqueEmail(), randomPassword, randomPassword);
@@ -38,7 +25,7 @@ test.describe('Registration Page tests', () => {
     })
 
 
-    test('Registration with empty email', async () => {
+    test('Registration with empty email', async ({ registerPage }) => {
         const randomPassword = faker.internet.password({ length: 10 });
 
         await registerPage.register(faker.internet.username(), '', randomPassword, randomPassword);
@@ -47,31 +34,31 @@ test.describe('Registration Page tests', () => {
         await expect(registerPage.page).toHaveURL(registerPage.url);
     })
 
-    test('Registration with invalid email', async () => {
+    test('Registration with invalid email', async ({ registerPage }) => {
         const randomPassword = faker.internet.password({ length: 10 });
-            await registerPage.register(faker.internet.username(), 'invalid-email', randomPassword, randomPassword);
-            await expect(registerPage.emailField).toHaveJSProperty('validity.typeMismatch', true);
-            await expect(registerPage.emailField).toHaveJSProperty('validationMessage', ErrorMessages.EMAIL_INVALID_MESSAGE)
-            await expect(registerPage.page).toHaveURL(registerPage.url);
+        await registerPage.register(faker.internet.username(), 'invalid-email', randomPassword, randomPassword);
+        await expect(registerPage.emailField).toHaveJSProperty('validity.typeMismatch', true);
+        await expect(registerPage.emailField).toHaveJSProperty('validationMessage', ErrorMessages.EMAIL_INVALID_MESSAGE)
+        await expect(registerPage.page).toHaveURL(registerPage.url);
 
-        
+
     });
 
-    test('Registration with empty password', async () => {
+    test('Registration with empty password', async ({ registerPage }) => {
         await registerPage.register(faker.internet.username(), generateUniqueEmail(), '', faker.internet.password({ length: 10 }));
         await expect(registerPage.passwordField).toHaveJSProperty('validity.valueMissing', true);
         await expect(registerPage.passwordField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
         await expect(registerPage.page).toHaveURL(registerPage.url);
     })
 
-    test('Registration with empty confirm password', async () => {
+    test('Registration with empty confirm password', async ({ registerPage }) => {
         await registerPage.register(faker.internet.username(), generateUniqueEmail(), faker.internet.password({ length: 10 }), '');
         await expect(registerPage.confirmPasswordField).toHaveJSProperty('validity.valueMissing', true);
         await expect(registerPage.confirmPasswordField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
         await expect(registerPage.page).toHaveURL(registerPage.url);
     })
 
-    test('Registration with non-matching passwords', async () => {
+    test('Registration with non-matching passwords', async ({ registerPage }) => {
         const randomPassword = faker.internet.password({ length: 10 });
         await registerPage.register(faker.internet.username(), generateUniqueEmail(), randomPassword, randomPassword + '1');
         await expect(registerPage.notMatchingPasswordError).toBeVisible();

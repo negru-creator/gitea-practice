@@ -1,6 +1,6 @@
 import { expect, Locator } from "@playwright/test";
 import BasePage from "./BasePage";
-import { step } from "../../utils/data-generation/decorators/step";
+import { step } from "../../utils/decorators/step";
 
 export default class SignInPage extends BasePage {
     public url: string = 'user/login';

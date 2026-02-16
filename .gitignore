@@ -9,3 +9,6 @@ node_modules/
 .env
 allure-results/
 allure-report/
+.states/
+test-data/users-data/*.json
+test-data/repos-data/*.json

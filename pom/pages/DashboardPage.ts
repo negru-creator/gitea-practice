@@ -1,6 +1,7 @@
+import { step } from "../../utils/decorators/step";
 import BasePage from "./BasePage";
 import { Locator } from "@playwright/test";
-import { step } from "../../utils/data-generation/decorators/step";
+
 
 export default class DashboardPage extends BasePage {
     public url: string = '/';

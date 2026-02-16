@@ -1,5 +1,5 @@
 import { Page } from "@playwright/test";
-import { step } from "../../utils/data-generation/decorators/step";
+import { step } from "../../utils/decorators/step";
 
 export default class BasePage {
     page: Page;

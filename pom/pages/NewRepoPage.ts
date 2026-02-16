@@ -1,7 +1,7 @@
 import { expect, Locator } from "@playwright/test";
 import BasePage from "./BasePage";
 import { RepoData } from '../../models/repo.model';
-import { step } from "../../utils/data-generation/decorators/step";
+import { step } from "../../utils/decorators/step";
 
 
 export default class NewRepoPage extends BasePage {

@@ -1,6 +1,6 @@
 import { Locator } from "@playwright/test";
 import BasePage from "./BasePage";
-import { step } from "../../utils/data-generation/decorators/step";
+import { step } from "../../utils/decorators/step";
 
 export default class RegisterPage extends BasePage {
     public url: string = '/user/sign_up';
@@ -24,7 +24,7 @@ export default class RegisterPage extends BasePage {
         await this.emailField.fill(email);
 
     }
-    
+
     @step('Enter password: {password}')
     async enterPassword(password: string) {
         await this.passwordField.fill(password);
