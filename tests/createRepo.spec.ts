@@ -1,95 +1,51 @@
-import { test, expect } from '@playwright/test';
-import DashboardPage from '../pom/pages/DashboardPage';
-import NewRepoPage from '../pom/pages/NewRepoPage';
-import SignInPage from '../pom/pages/SignInPage';
-import RepoDetailsPage from '../pom/pages/RepoDetailsPage';
-import RegisterPage from '../pom/pages/RegisterPage';
 import { faker } from '@faker-js/faker/locale/en';
-import { generateUniqueEmail } from '../utils/data-generation/emails';
 import { ErrorMessages } from '../test-data/messages/error-messages';
+import { expect, test } from '../utils/fixtures/pages';
+import testUser1Data from '../test-data/users-data/testUser1.json';
+import testRepoTemplateData from '../test-data/repos-data/testRepoTemplate1.json';
 
 test.describe('Create new repository', () => {
-  let dashboardPage: DashboardPage;
-  let newRepoPage: NewRepoPage;
-  let signInPage: SignInPage;
-  let repoDetailsPage: RepoDetailsPage;
+  const testUserName = testUser1Data.testUserName;
+  const templateRepoName = testRepoTemplateData.repoName;
 
-  let testUserName: string;
-  let testEmail: string;
-  let testPassword: string;
-  let templateRepoName: string;
+  test.use({ storageState: '.states/test-user1-storage-state.json' });
 
-  test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-
-    const registerPage = new RegisterPage(page);
-    dashboardPage = new DashboardPage(page);
-    newRepoPage = new NewRepoPage(page);
-    repoDetailsPage = new RepoDetailsPage(page);
-
-    testUserName = faker.internet.username();
-    testEmail = generateUniqueEmail();
-    testPassword = faker.internet.password({ length: 10 });
-
-    await registerPage.navigateTo();
-    await registerPage.register(testUserName, testEmail, testPassword, testPassword);
-    await expect(dashboardPage.successRegistrationMessage).toBeVisible();
-    await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
-
-    templateRepoName = faker.lorem.word();
-    await dashboardPage.clickCreateNewRepoButton();
-    await newRepoPage.createRepository({
-      repoName: templateRepoName,
-      isTemplate: true
-    });
-    await repoDetailsPage.waitForRepoPage(testUserName, templateRepoName);
-
-    await context.close();
-  });
-
-  test.beforeEach(async ({ page }) => {
-    dashboardPage = new DashboardPage(page);
-    newRepoPage = new NewRepoPage(page);
-    signInPage = new SignInPage(page);
-    repoDetailsPage = new RepoDetailsPage(page);
-
-    await signInPage.navigateTo();
-    await signInPage.signIn(testUserName, testPassword);
-
+  test.beforeEach(async ({ dashboardPage, newRepoPage }) => {
+    await dashboardPage.navigateTo();
     await dashboardPage.clickCreateNewRepoButton();
     await expect(newRepoPage.page).toHaveURL(newRepoPage.url);
     await expect(newRepoPage.newRepoHeader).toBeVisible();
+    
   });
 
-  test('Create repo with only repo name', async () => {
+  test('Create repo with only repo name', async ({ newRepoPage, repoDetailsPage }) => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
     await newRepoPage.createRepository({ repoName });
     await repoDetailsPage.waitForRepoPage(testUserName, repoName);
   });
 
-  test('Create repo fails without repo name', async () => {
+  test('Create repo fails without repo name', async ({ newRepoPage }) => {
     await newRepoPage.clickCreateRepoButton();
     await expect(newRepoPage.repoNameField).toHaveJSProperty('validity.valueMissing', true);
     await expect(newRepoPage.repoNameField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
     await expect(newRepoPage.page).toHaveURL(newRepoPage.url);
   });
 
-  test('Verify correct owner preselected', async () => {
+  test('Verify correct owner preselected', async ({ newRepoPage }) => {
     await newRepoPage.assureCorrectOwnerPreselected(testUserName);
   });
 
-  test('Verify "Initialize Repository" checkbox is checked when gitignore is selected', async () => {
+  test('Verify "Initialize Repository" checkbox is checked when gitignore is selected', async ({ newRepoPage }) => {
     await newRepoPage.selectGitignoreTemplates(['VisualStudio']);
     await expect(newRepoPage.initializeWithReadmeCheckbox).toBeChecked();
   });
 
-  test('Verify "Initialize Repository" checkbox is checked when license template is selected', async () => {
+  test('Verify "Initialize Repository" checkbox is checked when license template is selected', async ({ newRepoPage }) => {
     await newRepoPage.selectLicenseTemplate('MIT');
     await expect(newRepoPage.initializeWithReadmeCheckbox).toBeChecked();
   });
 
-  test('Create a brand new repo', async () => {
+  test('Create a brand new repo', async ({ newRepoPage, repoDetailsPage }) => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
     await newRepoPage.createRepository({
       repoName,
@@ -104,7 +60,7 @@ test.describe('Create new repository', () => {
     await repoDetailsPage.waitForRepoPage(testUserName, repoName);
   });
 
-  test('Create a repo based on a template', async () => {
+  test ('Create a repo based on a template', async ({ newRepoPage, repoDetailsPage }) => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
     await newRepoPage.createRepository({
       repoName,
@@ -114,7 +70,7 @@ test.describe('Create new repository', () => {
     await repoDetailsPage.waitForRepoPage(testUserName, repoName);
   });
 
-  test('Create a repo based on a template fails without selecting template items', async () => {
+  test('Create a repo based on a template fails without selecting template items', async ({ newRepoPage }) => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
     await newRepoPage.createRepository({
       repoName,

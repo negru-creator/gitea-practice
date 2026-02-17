@@ -1,82 +1,70 @@
-import test, { expect } from "@playwright/test";
-import SignInPage from "../pom/pages/SignInPage";
-import OpenIdLogin from "../pom/pages/OpenIdLoginPage";
-import DashboardPage from "../pom/pages/DashboardPage";
 import { ErrorMessages } from "../test-data/messages/error-messages";
-import ForgotPasswordPage from "../pom/pages/ForgotPasswordPage";
-import { validUser } from "../test-data/users-data/users";
-
+import { test, expect } from "../utils/fixtures/pages";
+import testUser1Data from '../test-data/users-data/testUser1.json';
 
 
 test.describe('Sign In Tests', () => {
-    let signInPage: SignInPage;
-    let openIdLogin: OpenIdLogin;
-    let dashboardPage: DashboardPage;
-    let forgetPasswordPage: ForgotPasswordPage;
-    test.beforeEach(async ({ page }) => {
-        signInPage = new SignInPage(page);
-        openIdLogin = new OpenIdLogin(page);
-        dashboardPage = new DashboardPage(page);
-        forgetPasswordPage = new ForgotPasswordPage(page);
-        await signInPage.navigateTo();
-    });
-    test('Sign In with valid username and password', async () => {
-        await signInPage.signIn(validUser.username, validUser.password);
-        await expect(dashboardPage.navBarUserName).toHaveText(validUser.username);
+    const testUserName = testUser1Data.testUserName;
+    const testEmail = testUser1Data.testEmail;
+    const testPassword = testUser1Data.testPassword;
+
+    test('Sign In with valid username and password', async ({ signInPage, dashboardPage }) => {
+        await signInPage.signIn(testUserName, testPassword);
+        await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
         await expect(dashboardPage.page).toHaveURL(dashboardPage.url);
     })
-    test('Sign In with valid email and password', async () => {
-        await signInPage.signIn(validUser.email, validUser.password);
-        await expect(dashboardPage.navBarUserName).toHaveText(validUser.username);
+    test('Sign In with valid email and password', async ({ signInPage, dashboardPage }) => {
+        await signInPage.signIn(testEmail, testPassword);
+        await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
         await expect(dashboardPage.page).toHaveURL(dashboardPage.url);
     })
-    test('Sign In with "Remember this device" option selected', async () => {
-        await signInPage.signIn(validUser.username, validUser.password, true);
-        await expect(dashboardPage.navBarUserName).toHaveText(validUser.username);
+    test('Sign In with "Remember this device" option selected', async ({ signInPage, dashboardPage }) => {
+        await signInPage.signIn(testUserName, testPassword, true);
+        await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
         await expect(dashboardPage.page).toHaveURL(dashboardPage.url);
     })
 
-    test('Sign In with empty username', async () => {
-        await signInPage.signIn('', validUser.password);
+    test('Sign In with empty username', async ({ signInPage }) => {
+        await signInPage.signIn('', testPassword);
         await expect(signInPage.usernameOrEmailField).toHaveJSProperty('validity.valueMissing', true);
         await expect(signInPage.usernameOrEmailField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
         await expect(signInPage.page).toHaveURL(signInPage.url);
     })
 
-    test('Sign In with empty password', async () => {
-        await signInPage.signIn(validUser.username, '');
+    test('Sign In with empty password', async ({ signInPage }) => {
+        await signInPage.signIn(testUserName, '');
         await expect(signInPage.passwordField).toHaveJSProperty('validity.valueMissing', true);
         await expect(signInPage.passwordField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
         await expect(signInPage.page).toHaveURL(signInPage.url);
     })
 
-    test('Sign In with invalid username', async () => {
-        await signInPage.signIn('invalidUsername', validUser.password);
+    test('Sign In with invalid username', async ({ signInPage }) => {
+        await signInPage.signIn('invalidUsername', testPassword);
         await expect(signInPage.incorrectCredsError).toBeVisible();
         await expect(signInPage.page).toHaveURL(signInPage.url);
     })
 
-    test('Sign In with invalid email', async () => {
-        await signInPage.signIn('invalidEmail@invalid.com', validUser.password);
+    test('Sign In with invalid email', async ({ signInPage }) => {
+        await signInPage.signIn('invalidEmail@invalid.com', testPassword);
         await expect(signInPage.incorrectCredsError).toBeVisible();
         await expect(signInPage.page).toHaveURL(signInPage.url);
     })
 
-    test('Sign In with invalid password', async () => {
-        await signInPage.signIn(validUser.username, 'invalidPassword');
+    test('Sign In with invalid password', async ({ signInPage }) => {
+        await signInPage.signIn(testUserName, 'invalidPassword');
         await expect(signInPage.incorrectCredsError).toBeVisible();
         await expect(signInPage.page).toHaveURL(signInPage.url);
     })
-    test('Click on "Forgot password?" link', async () => {
+    test('Click on "Forgot password?" link', async ({ signInPage, forgotPasswordPage }) => {
         await signInPage.clickForgotPasswordLink();
-        await expect(signInPage.page).toHaveURL(forgetPasswordPage.url);
-        await expect(forgetPasswordPage.forgotPasswordHeader).toBeVisible();
+        await expect(signInPage.page).toHaveURL(forgotPasswordPage.url);
+        await expect(forgotPasswordPage.forgotPasswordHeader).toBeVisible();
     })
-    test('Click on "Sign In with OpenID" button', async () => {
+    test('Click on "Sign In with OpenID" button', async ({ signInPage, openIdLoginPage }) => {
         await signInPage.clickSignInWithOpenIDButton();
-        await expect(signInPage.page).toHaveURL(openIdLogin.url);
-        await expect(openIdLogin.openIdHeader).toBeVisible();
-        await expect(openIdLogin.openIdField).toBeVisible();
+        await expect(signInPage.page).toHaveURL(openIdLoginPage.url);
+        await expect(openIdLoginPage.openIdHeader).toBeVisible();
+        await expect(openIdLoginPage.openIdField).toBeVisible();
     })
 
 })
