@@ -11,6 +11,7 @@ import { generateUniqueEmail } from '../utils/data-generation/emails';
 test.describe('Registration Page tests', () => {
     let registerPage: RegisterPage;
     let dashboardPage: DashboardPage;
+
     test.beforeEach(async ({ page }) => {
         registerPage = new RegisterPage(page);
         dashboardPage = new DashboardPage(page);
@@ -75,7 +76,7 @@ test.describe('Registration Page tests', () => {
         await expect(registerPage.notMatchingPasswordError).toBeVisible();
         await expect(registerPage.passwordField).toHaveCSS('border-color', 'rgb(224, 180, 180)');
         await expect(registerPage.confirmPasswordField).toHaveCSS('border-color', 'rgb(224, 180, 180)');
-
         await expect(registerPage.page).toHaveURL(registerPage.url);
     })
+
 })

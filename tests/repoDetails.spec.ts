@@ -6,7 +6,6 @@ import RepoDetailsPage from '../pom/pages/RepoDetailsPage';
 import RegisterPage from '../pom/pages/RegisterPage';
 import { faker } from '@faker-js/faker/locale/en';
 import { generateUniqueEmail } from '../utils/data-generation/emails';
-import { ErrorMessages } from '../test-data/messages/error-messages';
 
 test.describe('Create new repository', () => {
   let dashboardPage: DashboardPage;
@@ -34,15 +33,18 @@ test.describe('Create new repository', () => {
 
     await registerPage.navigateTo();
     await registerPage.register(testUserName, testEmail, testPassword, testPassword);
+
     await expect(dashboardPage.successRegistrationMessage).toBeVisible();
     await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
 
     templateRepoName = faker.lorem.word();
+
     await dashboardPage.clickCreateNewRepoButton();
     await newRepoPage.createRepository({
       repoName: templateRepoName,
       isTemplate: true
     });
+
     await repoDetailsPage.waitForRepoPage(testUserName, templateRepoName);
 
     await context.close();
@@ -58,69 +60,69 @@ test.describe('Create new repository', () => {
     await signInPage.signIn(testUserName, testPassword);
 
     await dashboardPage.clickCreateNewRepoButton();
+
     await expect(newRepoPage.page).toHaveURL(newRepoPage.url);
     await expect(newRepoPage.newRepoHeader).toBeVisible();
   });
 
-  test('Create repo with only repo name', async () => {
+  test('Verify that the description of a new empty repository is displayed correctly', async () => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
-    await newRepoPage.createRepository({ repoName });
+    const repoDescription = faker.lorem.sentence();
+
+    await newRepoPage.createRepository({ repoName, description: repoDescription });
     await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkDescriptionDisplayedForEmptyRepo(repoDescription);
   });
 
-  test('Create repo fails without repo name', async () => {
-    await newRepoPage.clickCreateRepoButton();
-    await expect(newRepoPage.repoNameField).toHaveJSProperty('validity.valueMissing', true);
-    await expect(newRepoPage.repoNameField).toHaveJSProperty('validationMessage', ErrorMessages.FIELD_EMPTY_MESSAGE);
-    await expect(newRepoPage.page).toHaveURL(newRepoPage.url);
-  });
-
-  test('Verify correct owner preselected', async () => {
-    await newRepoPage.assureCorrectOwnerPreselected(testUserName);
-  });
-
-  test('Verify "Initialize Repository" checkbox is checked when gitignore is selected', async () => {
-    await newRepoPage.selectGitignoreTemplates(['VisualStudio']);
-    await expect(newRepoPage.initializeWithReadmeCheckbox).toBeChecked();
-  });
-
-  test('Verify "Initialize Repository" checkbox is checked when license template is selected', async () => {
-    await newRepoPage.selectLicenseTemplate('MIT');
-    await expect(newRepoPage.initializeWithReadmeCheckbox).toBeChecked();
-  });
-
-  test('Create a brand new repo', async () => {
+  test('Verify that the description of a new initialized repository is displayed correctly', async () => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
-    await newRepoPage.createRepository({
-      repoName,
-      isPrivate: true,
-      description: faker.lorem.sentence(),
-      labels: 'Default',
-      gitignoresTemplate: ['VisualStudio', 'Packer'],
-      licenseTemplate: 'MIT',
-      defaultBranchName: faker.lorem.word(),
-      isTemplate: true
+    const repoDescription = faker.lorem.sentence();
+
+    await newRepoPage.createRepository({ 
+      repoName, 
+      description: repoDescription, 
+      isInitialized: true 
     });
+
     await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkDescriptionDisplayedForInitializedRepo(repoDescription);
   });
 
-  test('Create a repo based on a template', async () => {
+  test('Verify that the private label is displayed for private repositories', async () => {
     const repoName = `AQA-repo-${faker.lorem.word()}`;
-    await newRepoPage.createRepository({
-      repoName,
-      repoTemplateName: templateRepoName,
-      templateItems: ['git_content', 'avatar'],
+
+    await newRepoPage.createRepository({ repoName, isPrivate: true });
+    await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkPrivateLabelDisplayed();
+  });
+
+  test('Verify that the template label is displayed for template repositories', async () => {
+    const repoName = `AQA-repo-${faker.lorem.word()}`;
+
+    await newRepoPage.createRepository({ repoName, isTemplate: true });
+    await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkTemplateLabelDisplayed();
+  });
+
+  test('Verify that correct license template is displayed on repo details page', async () => {
+    const repoName = `AQA-repo-${faker.lorem.word()}`;
+    const licenseTemplate = '0BSD';
+
+    await newRepoPage.createRepository({ repoName, licenseTemplate });
+    await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkLicenseLinksDisplayed(licenseTemplate);
+  });
+
+  test('Verify that gitignore template is displayed on repo details page', async () => {
+    const repoName = `AQA-repo-${faker.lorem.word()}`;
+
+    await newRepoPage.createRepository({ 
+      repoName, 
+      gitignoresTemplate: ['VisualStudio'] 
     });
-    await repoDetailsPage.waitForRepoPage(testUserName, repoName);
-  });
 
-  test('Create a repo based on a template fails without selecting template items', async () => {
-    const repoName = `AQA-repo-${faker.lorem.word()}`;
-    await newRepoPage.createRepository({
-      repoName,
-      repoTemplateName: templateRepoName,
-    })
-    await expect(newRepoPage.missingTemplateItem).toBeVisible();
-    await expect(newRepoPage.page).toHaveURL(newRepoPage.url);
-  })
-})
+    await repoDetailsPage.waitForRepoPage(testUserName, repoName);
+    await repoDetailsPage.checkGitignoreLinkDisplayed();
+  });
+});
+

@@ -12,6 +12,7 @@ export default class NewRepoPage extends BasePage {
     private descriptionField: Locator = this.page.locator('#description');
     private repoTemplateDropdown: Locator = this.page.locator('#repo_template_search');
     private templateItemsSection = this.page.locator('.field', { hasText: 'Template Items' });
+    public missingTemplateItem = this.page.locator('.flash-error>p', { hasText: 'Must select at least one template item' });
     private issueLabelDropdown: Locator = this.page.locator('.ui.search.selection.dropdown').nth(1);
     private gitignoreDropdown: Locator = this.page.locator('.ui.search.selection.dropdown').nth(2);
     private licenseTemplateDropdown: Locator = this.page.locator('.ui.search.selection.dropdown').nth(3);
@@ -40,8 +41,11 @@ export default class NewRepoPage extends BasePage {
 
     async selectRepoTemplate(templateName: string) {
         await this.repoTemplateDropdown.click();
-        const templateOption = this.repoTemplateDropdown.locator(`.item[data-value="${templateName}"]`);
+
+        const templateOption = this.repoTemplateDropdown.locator(`.item`, { hasText: templateName });
+        await templateOption.waitFor({ state: 'visible' });
         await templateOption.click();
+
         await expect(this.templateItemsSection).toBeVisible();
     }
 
