@@ -1,0 +1,27 @@
+{
+  "name": "gitea-practice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/negru-creator/gitea-practice.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/negru-creator/gitea-practice/issues"
+  },
+  "homepage": "https://github.com/negru-creator/gitea-practice#readme",
+  "devDependencies": {
+    "@faker-js/faker": "^10.3.0",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.2.3"
+  },
+  "dependencies": {
+    "faker": "^6.6.6"
+  }
+}
