@@ -1,4 +1,4 @@
-export default function saveUserData(userData: { testUserName: string; testEmail: string; testPassword: string }, filePath: string = `./test-data/users-data/${userData.testUserName}.json`): void {
+export default function saveUserData(userData: { testUserName: string; testEmail: string; testPassword: string, userToken: string }, filePath: string = `./test-data/users-data/${userData.testUserName}.json`): void {
     const fs = require('fs');
     const path = require('path');
     const dir = path.dirname(filePath);

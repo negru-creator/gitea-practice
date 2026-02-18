@@ -2,26 +2,24 @@ import { expect, test } from '../../utils/fixtures/pages';
 import { faker } from '@faker-js/faker/locale/en';
 import { generateUniqueEmail } from "../../utils/data-generation/emails";
 import saveUserData from '../../utils/data-generation/saveUserData';
-import saveRepoData from '../../utils/data-generation/saveRepoData';
 
-test('Register testUser1 with a repo template and save storage state', async ({ registerPage, dashboardPage, newRepoPage, repoDetailsPage }) => {
-    const testUserName = faker.internet.username();
-    const testEmail = generateUniqueEmail();
-    const testPassword = faker.internet.password({ length: 10 });
-    const templateRepoNameSetup = `AQA-repo-${faker.lorem.word()}`;
+test('Register testUser1 with a repo template and save storage state', async ({ registerPage, dashboardPage, newRepoPage, repoDetailsPage, userSettingsPage }) => {
+  const testUserName = faker.internet.username();
+  const testEmail = generateUniqueEmail();
+  const testPassword = faker.internet.password({ length: 10 });
 
-    await registerPage.register(testUserName, testEmail, testPassword, testPassword);
-    await registerPage.page.waitForURL('/');
 
-    await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
-    await registerPage.page.context().storageState({ path: '.states/test-user1-storage-state.json' });
-    saveUserData({ testUserName, testEmail, testPassword }, './test-data/users-data/testUser1.json');
+  await registerPage.register(testUserName, testEmail, testPassword, testPassword);
+  await registerPage.page.waitForURL('/');
 
-    await dashboardPage.clickCreateNewRepoButton();
-    await newRepoPage.createRepository({
-      repoName: templateRepoNameSetup,
-      isTemplate: true
-    });
-    await repoDetailsPage.waitForRepoPage(testUserName, templateRepoNameSetup);
-    saveRepoData({ repoName: templateRepoNameSetup, isTemplate: true }, './test-data/repos-data/testRepoTemplate1.json');
+  await expect(dashboardPage.navBarUserName).toHaveText(testUserName);
+
+
+  await dashboardPage.openUserSettings();
+  await userSettingsPage.navigateToApplicationsTab();
+  const generatedToken = await userSettingsPage.generateNewToken(`TestTokenName-${faker.lorem.word()}`);
+
+  await registerPage.page.context().storageState({ path: '.states/test-user1-storage-state.json' });
+  saveUserData({ testUserName, testEmail, testPassword, userToken: generatedToken }, './test-data/users-data/testUser1.json');
+
 });

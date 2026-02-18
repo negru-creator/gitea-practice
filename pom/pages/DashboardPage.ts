@@ -9,9 +9,18 @@ export default class DashboardPage extends BasePage {
     public navBarUserName: Locator = this.page.locator('.gt-ellipsis').first();
     private createNewRepoButton: Locator = this.page.locator('[aria-label="New Repository"]');
 
+    private profileAndSettingsButton: Locator = this.page.locator('[aria-label="Profile and Settings…"]');
+    private settingsOption: Locator = this.page.locator('[href="/user/settings"]');
+
     @step('Click Create New Repository button')
     public async clickCreateNewRepoButton() {
         await this.createNewRepoButton.click();
+    }
+
+    @step('Open user settings')
+    public async openUserSettings() {
+        await this.profileAndSettingsButton.click();
+        await this.settingsOption.click();
     }
 
 }
