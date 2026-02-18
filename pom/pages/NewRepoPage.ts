@@ -1,6 +1,6 @@
 import { expect, Locator } from "@playwright/test";
 import BasePage from "./BasePage";
-import { RepoData } from '../../models/repo.model';
+import { RepoData } from '../../uiModels/repo.model';
 import { step } from "../../utils/decorators/step";
 
 
@@ -49,7 +49,7 @@ export default class NewRepoPage extends BasePage {
         await this.repoTemplateDropdown.click();
 
         const templateOption = this.repoTemplateDropdown.locator(`.item`, { hasText: templateName });
-        await templateOption.waitFor({ state: 'visible' });
+        await templateOption.waitFor({ state: 'visible', timeout: 5000 });;
         await templateOption.click();
 
         await expect(this.templateItemsSection).toBeVisible();
