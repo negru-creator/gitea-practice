@@ -1,0 +1,59 @@
+name: Run Playwright + Gitea in Docker
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Run Docker Compose (build & test)
+        run: |
+          docker compose up --abort-on-container-exit --remove-orphans --build
+
+      - name: Clean up containers
+        run: |
+          docker compose down --volumes --remove-orphans
+
+      - name: Upload Playwright report
+        if: always() # run even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: ./playwright-report
+
+  deploy:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: run-tests
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Playwright report artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report
+          path: out
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
