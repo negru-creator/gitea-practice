@@ -1,0 +1,23 @@
+services:
+  gitea:
+    image: gitea/gitea
+    container_name: gitea
+    restart: no # Do not restart automatically after exit
+    ports:
+      - "3000:3000" # Expose Gitea web interface to host
+    # No volume = Gitea will reset every time
+
+  tests:
+    build:
+      context: . # Use current directory as Docker build context
+      dockerfile: Dockerfile
+    depends_on:
+      - gitea # Wait for Gitea to start before running tests
+    environment:
+      - CI=true # Internal Docker DNS name for Gitea from tests container
+      - BASE_URL=http://gitea:3000 # Use Docker service name instead of localhost
+    volumes:
+      - ./playwright-report:/app/playwright-report # Mount report directory to host
+    # command: >
+    #   sh -c "npx playwright install && npx playwright test"  # Run Playwright tests
+    restart: "no" # Do not restart after test run completes

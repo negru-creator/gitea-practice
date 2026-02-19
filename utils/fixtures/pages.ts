@@ -6,6 +6,7 @@ import OpenIdLoginPage from '../../pom/pages/OpenIdLoginPage';
 import DashboardPage from '../../pom/pages/DashboardPage';
 import NewRepoPage from '../../pom/pages/NewRepoPage';
 import RepoDetailsPage from '../../pom/pages/RepoDetailsPage';
+import UserSettingsPage from '../../pom/pages/UserSettingsPage';
 
 
 type PageObjects = {
@@ -16,6 +17,7 @@ type PageObjects = {
   dashboardPage: DashboardPage;
   newRepoPage: NewRepoPage;
   repoDetailsPage: RepoDetailsPage;
+  userSettingsPage: UserSettingsPage;
 };
 
 export const test = base.extend<PageObjects>({
@@ -54,6 +56,11 @@ export const test = base.extend<PageObjects>({
   repoDetailsPage: async ({ page }, use) => {
     const repoDetailsPage = new RepoDetailsPage(page);
     await use(repoDetailsPage);
+  },
+
+  userSettingsPage: async ({ page }, use) => {
+    const userSettingsPage = new UserSettingsPage(page);
+    await use(userSettingsPage);
   },
 
 });

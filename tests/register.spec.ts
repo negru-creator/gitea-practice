@@ -3,6 +3,7 @@ import { ErrorMessages } from '../test-data/messages/error-messages';
 import { generateUniqueEmail } from '../utils/data-generation/emails';
 import { expect, test } from '../utils/fixtures/pages';
 
+
 test.describe('Registration Page tests', () => {
 
     test('Successful registration', async ({ registerPage, dashboardPage }) => {
@@ -12,7 +13,6 @@ test.describe('Registration Page tests', () => {
         await registerPage.register(randomUserName, generateUniqueEmail(), randomPassword, randomPassword);
         await expect(dashboardPage.successRegistrationMessage).toBeVisible();
         await expect(dashboardPage.navBarUserName).toHaveText(randomUserName);
-
     });
 
     test('Registration with empty username', async ({ registerPage }) => {
